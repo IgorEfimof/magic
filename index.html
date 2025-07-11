@@ -3,53 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Магический квадрат 5×5</title>
+    <title>Магический квадрат 5×5 (букмекерский стиль)</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Arial', sans-serif;
+            background-color: #1a1a1a;
+            margin: 0;
+            padding: 20px;
+            color: #e0e0e0;
         }
-        table {
-            border-collapse: collapse;
-            margin: 20px auto;
-        }
-        td {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #000;
-            text-align: center;
-            vertical-align: middle;
-        }
-        input, button {
-            padding: 8px;
-            margin: 5px;
-        }
-        .controls {
+        
+        .header {
+            color: #ffcc00;
             text-align: center;
             margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .controls {
+            background-color: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        label {
+            margin-right: 10px;
+            color: #b3b3b3;
+            font-size: 14px;
+        }
+        
+        input {
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            width: 80px;
+        }
+        
+        button {
+            background-color: #ffcc00;
+            color: #1a1a1a;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #ffd633;
+        }
+        
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: #2d2d2d;
+        }
+        
+        td {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #4d4d4d;
+            text-align: center;
+            vertical-align: middle;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        
+        /* Стиль для выделения ячеек */
+        td.highlight {
+            background-color: #3a3a3a;
         }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">Магический квадрат 5×5</h1>
+    <div class="header">Магический квадрат 5×5</div>
     
     <div class="controls">
-        <label for="startNum">Начальное число:</label>
-        <input type="number" id="startNum" value="1" min="1">
+        <div class="control-group">
+            <label for="startNum">Начальное число:</label>
+            <input type="number" id="startNum" value="1.0" step="0.01">
+        </div>
         
-        <label for="step">Шаг:</label>
-        <input type="number" id="step" value="1" min="1">
+        <div class="control-group">
+            <label for="step">Шаг:</label>
+            <input type="number" id="step" value="1.0" step="0.01">
+        </div>
         
         <button onclick="generateMagicSquare()">Сгенерировать</button>
     </div>
     
     <table id="magicSquare"></table>
     
+    <div class="result" id="magicConstant"></div>
+    
     <script>
         function generateMagicSquare() {
             const n = 5;
-            const startNum = parseInt(document.getElementById("startNum").value) || 1;
-            const step = parseInt(document.getElementById("step").value) || 1;
+            const startNum = parseFloat(document.getElementById("startNum").value) || 1.0;
+            const step = parseFloat(document.getElementById("step").value) || 1.0;
             
             let magicSquare = Array(n).fill().map(() => Array(n).fill(0));
             
@@ -59,7 +134,7 @@
             
             for (let k = 0; k < n * n; k++) {
                 magicSquare[i][j] = currentNum;
-                currentNum += step;
+                currentNum = parseFloat((currentNum + step).toFixed(2));
                 
                 let nexti = (i - 1 + n) % n;
                 let nextj = (j + 1) % n;
@@ -80,13 +155,19 @@
                 const row = table.insertRow();
                 for (let j = 0; j < n; j++) {
                     const cell = row.insertCell();
-                    cell.textContent = magicSquare[i][j];
+                    cell.textContent = magicSquare[i][j].toFixed(2);
+                    
+                    // Добавляем класс highlight для каждой второй ячейки
+                    if ((i + j) % 2 === 0) {
+                        cell.classList.add('highlight');
+                    }
                 }
             }
             
-            // Проверка магической константы (опционально)
-            const magicConstant = n * (startNum + (startNum + (n*n - 1)*step)) / 2;
-            console.log("Магическая константа: ", magicConstant);
+            // Расчёт магической константы
+            const magicSum = n * (2 * startNum + (n * n - 1) * step) / 2;
+            document.getElementById("magicConstant").textContent = 
+                `Магическая константа (сумма строк/столбцов/диагоналей): ${magicSum.toFixed(2)}`;
         }
         
         // Генерация при загрузке
