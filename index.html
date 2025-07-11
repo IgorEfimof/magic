@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магический квадрат 5×5</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        td {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #000;
+            text-align: center;
+            vertical-align: middle;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Магический квадрат 5×5</h1>
+    
+    <div class="controls">
+        <label for="startNum">Начальное число:</label>
+        <input type="number" id="startNum" value="1" min="1">
+        
+        <label for="step">Шаг:</label>
+        <input type="number" id="step" value="1" min="1">
+        
+        <button onclick="generateMagicSquare()">Сгенерировать</button>
+    </div>
+    
+    <table id="magicSquare"></table>
+    
+    <script>
+        function generateMagicSquare() {
+            const n = 5;
+            const startNum = parseInt(document.getElementById("startNum").value) || 1;
+            const step = parseInt(document.getElementById("step").value) || 1;
+            
+            let magicSquare = Array(n).fill().map(() => Array(n).fill(0));
+            
+            // Алгоритм Сиамского метода (для нечётных n)
+            let i = 0, j = Math.floor(n / 2);
+            let currentNum = startNum;
+            
+            for (let k = 0; k < n * n; k++) {
+                magicSquare[i][j] = currentNum;
+                currentNum += step;
+                
+                let nexti = (i - 1 + n) % n;
+                let nextj = (j + 1) % n;
+                
+                if (magicSquare[nexti][nextj] !== 0) {
+                    i = (i + 1) % n;
+                } else {
+                    i = nexti;
+                    j = nextj;
+                }
+            }
+            
+            // Отображение в таблице
+            const table = document.getElementById("magicSquare");
+            table.innerHTML = "";
+            
+            for (let i = 0; i < n; i++) {
+                const row = table.insertRow();
+                for (let j = 0; j < n; j++) {
+                    const cell = row.insertCell();
+                    cell.textContent = magicSquare[i][j];
+                }
+            }
+            
+            // Проверка магической константы (опционально)
+            const magicConstant = n * (startNum + (startNum + (n*n - 1)*step)) / 2;
+            console.log("Магическая константа: ", magicConstant);
+        }
+        
+        // Генерация при загрузке
+        window.onload = generateMagicSquare;
+    </script>
+</body>
+</html>
